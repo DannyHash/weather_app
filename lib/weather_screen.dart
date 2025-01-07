@@ -1,21 +1,55 @@
+import 'dart:convert';
 import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:weather_app/additional_info_item.dart';
 import 'package:weather_app/hourly_forecast_item.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
-class WeatherScreen extends StatelessWidget {
+class WeatherScreen extends StatefulWidget {
   const WeatherScreen({super.key});
 
-  Future getCurrentWeather() async {
+  @override
+  State<WeatherScreen> createState() => _WeatherScreenState();
+}
+
+class _WeatherScreenState extends State<WeatherScreen> {
+  @override
+  void initState() {
+    super.initState();
+    getCurrentWeather();
+  }
+
+  Future<void> getCurrentWeather() async {
+    final String? apiKey = dotenv.env['OPEN_WEATHER_MAP_API_KEY'];
+    if (kDebugMode) {
+      if (kDebugMode) {
+        debugPrint('Loaded API Key: $apiKey');
+      }
+    }
+    if (apiKey == null) {
+      throw Exception('API Key not found');
+    }
+
     // Fetch weather data from API
-    String cityName = 'London';
-    http.get(
-      Uri.parse(
-          'https://api.openweathermap.org/data/2.5/weather?q=$cityName&APPID=$openWeatherMapApiKey'),
-    );
+    try {
+      String cityName = 'London';
+      final res = await http.get(
+        Uri.parse(
+            'https://api.openweathermap.org/data/2.5/forecast?q=$cityName&APPID=$apiKey'),
+      );
+
+      final data = jsonDecode(res.body);
+
+      if (data['cod'] != '200') {
+        throw 'An unexpected error occurred';
+      }
+      print(data['list'][0]['main']['temp']);
+    } catch (e) {
+      throw e.toString();
+    }
   }
 
   @override
@@ -165,4 +199,8 @@ class WeatherScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+extension on Future<http.Response> {
+  Object? get body => null;
 }
