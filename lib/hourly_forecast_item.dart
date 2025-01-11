@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
+/// A reusable widget to display hourly weather forecast information.
 class HourlyForecastItem extends StatelessWidget {
   final String time;
   final String temperature;
   final IconData icon;
+  // Constructor to initialize the required properties.
   const HourlyForecastItem(
       {super.key,
       required this.time,
@@ -22,6 +24,7 @@ class HourlyForecastItem extends StatelessWidget {
         ),
         child: Column(
           children: [
+            // Displays the time of the forecast.
             Text(
               time,
               style: TextStyle(

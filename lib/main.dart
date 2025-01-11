@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:weather_app/weather_screen.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+/// The entry point of the Flutter application.
 Future<void> main() async {
+  // Attempt to load environment variables from the .env file
   try {
     await dotenv.load(fileName: ".env");
   } catch (e) {
@@ -14,6 +16,7 @@ Future<void> main() async {
   runApp(const WeatherApp());
 }
 
+/// The root widget of the application
 class WeatherApp extends StatelessWidget {
   const WeatherApp({super.key});
 

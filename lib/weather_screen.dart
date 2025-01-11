@@ -9,6 +9,7 @@ import 'package:weather_app/hourly_forecast_item.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
+/// A screen to display current weather information and forecast
 class WeatherScreen extends StatefulWidget {
   const WeatherScreen({super.key});
 
@@ -19,6 +20,7 @@ class WeatherScreen extends StatefulWidget {
 class _WeatherScreenState extends State<WeatherScreen> {
   late Future<Map<String, dynamic>> weather;
 
+  /// Fetches the current weather data for a predefined city
   Future<Map<String, dynamic>> getCurrentWeather() async {
     final String? apiKey = dotenv.env['OPEN_WEATHER_MAP_API_KEY'];
     if (kDebugMode) {
@@ -40,6 +42,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
 
       final data = jsonDecode(res.body);
 
+      // Check if the API response code is successful
       if (data['cod'] != '200') {
         throw 'An unexpected error occurred';
       }
@@ -67,6 +70,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
         ),
         centerTitle: true,
         actions: [
+          // Refresh button to reload weather data
           IconButton(
             onPressed: () {
               setState(() {
@@ -82,17 +86,20 @@ class _WeatherScreenState extends State<WeatherScreen> {
         builder: (context, snapshot) {
           print(snapshot);
 
+          // Show a loading indicator while fetching data
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
               child: CircularProgressIndicator.adaptive(),
             );
           }
+          // Display an error message if there is an error
           if (snapshot.hasError) {
             return Center(
               child: Text(snapshot.error.toString()),
             );
           }
 
+          // Extract current weather data from the API response
           final data = snapshot.data!;
           final currentWeatherData = data['list'][0];
           final currentTemp = currentWeatherData['main']['temp'];
@@ -100,6 +107,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
           final currentPressure = currentWeatherData['main']['pressure'];
           final currentWindSpeed = currentWeatherData['wind']['speed'];
           final currentHumidity = currentWeatherData['main']['humidity'];
+          // Build the UI to display weather information
           return Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -129,6 +137,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                 ),
                               ),
                               const SizedBox(height: 16),
+                              // Icon representing the current weather condition
                               Icon(
                                 currentSky == 'Clouds' || currentSky == 'Snow'
                                     ? Icons.cloud
@@ -136,6 +145,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                 size: 64,
                               ),
                               const SizedBox(height: 16),
+                              // Current weather condition (e.g., Clear, Rain)
                               Text(
                                 currentSky,
                                 style: TextStyle(fontSize: 20),
@@ -159,6 +169,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                 ),
                 const SizedBox(height: 8),
 
+                // Horizontal list of hourly forecast items
                 SizedBox(
                   height: 120,
                   child: ListView.builder(
@@ -192,6 +203,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                   ),
                 ),
                 const SizedBox(height: 8),
+                // Display additional weather metrics
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
